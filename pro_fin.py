@@ -1,15 +1,16 @@
 import streamlit as st
 import random
 import requests
+import time
 
-# 1. 페이지 설정 및 스타일 (수사대 다크 & 카툰 스타일)
+# 1. 페이지 설정 및 스타일
 st.set_page_config(
     page_title="국어 수사대 : 표준 발음법 추적 미션",
     page_icon="🕵️",
     layout="centered"
 )
 
-# 커스텀 스타일 (수사대 테마)
+# 커스텀 스타일
 st.markdown("""
 <style>
     .main-title { font-size: 2.5rem !important; font-weight: 800; color: #1E3A8A; text-align: center; margin-bottom: 5px; }
@@ -36,7 +37,6 @@ if st.session_state.stage == 1 and not st.session_state.user_name:
     st.markdown("<div class='main-title'>🕵️ 국어 수사대: 사라진 표준 발음을 찾아라!</div>", unsafe_allow_html=True)
     st.markdown("<div class='subtitle'>우리가 무심히 쓰는 말속에 숨은 비밀 규칙을 파헤치는 특급 보강 미션!</div>", unsafe_allow_html=True)
     
-    # 📌 코드로 직접 그리는 "사건 단서 게시판" (꽃 -> [꼳] 반영)
     st.markdown("""
     <div style="background-color: #2D3748; border: 4px solid #4A5568; border-radius: 12px; padding: 20px; margin-bottom: 25px; color: white;">
         <div style="text-align: center; font-size: 1.3rem; font-weight: bold; border-bottom: 2px dashed #718096; padding-bottom: 10px; margin-bottom: 15px;">
@@ -113,7 +113,7 @@ if st.session_state.stage == 1:
                 r = st.selectbox("적용 법칙?", d["r_opts"], key=f"m1_r_{i}")
                 ans_collect.append((p, r))
         
-        submitted = st.form_submit_button("🚨 단서 검증 (제출)")
+        submitted = st.form_submit_button("🚨 단서 검증 및 다음 미션으로")
         
     if submitted:
         correct_count = 0
@@ -124,11 +124,8 @@ if st.session_state.stage == 1:
         
         if correct_count == 3:
             st.session_state.score += 30
-            st.balloons()
-            st.success("🎉 사건 완벽 해결! 흩어진 규칙들을 모두 안전하게 수거했습니다 (+30점)")
-            if st.button("다음 사건(MISSION 02)으로 이동 ➡️"):
-                st.session_state.stage = 2
-                st.rerun()
+            st.session_state.stage = 2
+            st.rerun()
         else:
             st.error(f"❌ 단서 일부가 잘못되었습니다 ({correct_count}/3 성공). 현장을 다시 살펴보고 재도전하세요!")
 
@@ -161,30 +158,25 @@ elif st.session_state.stage == 2:
             user_input = col.text_input(f"🖋️ '{item['word']}'의 발음은?", placeholder="여기에 입력", key=f"m2_in_{idx}").strip()
             ans_inputs.append(user_input)
             
-        submitted = st.form_submit_button("🔍 발음 감식 (체크)")
+        submitted = st.form_submit_button("🔍 발음 감식 및 다음 미션으로")
         
     if submitted:
         m2_score = 0
-        feedback = []
+        wrong_feedback = []
         for idx, item in enumerate(m2_targets):
             if ans_inputs[idx] == item["ans"]:
                 m2_score += 10
-                feedback.append(f"✅ `{item['word']}` ➡️ `[{item['ans']}]` (감식 성공!)")
             else:
-                feedback.append(f"❌ `{item['word']}` ➡️ 정답은 `[{item['ans']}]` 입니다. ({item['tip']})")
+                wrong_feedback.append(f"❌ `{item['word']}`: 입력값 '{ans_inputs[idx]}' ➡️ 정답은 `[{item['ans']}]` ({item['tip']})")
                 
-        for fb in feedback:
-            st.write(fb)
-            
         if m2_score == 40:
             st.session_state.score += 40
-            st.snow()
-            st.success("🕵️ 대단합니다! 사소한 소리의 비틀림까지 모두 찾아냈습니다. (+40점)")
-            if st.button("다음 사건(MISSION 03)으로 이동 ➡️"):
-                st.session_state.stage = 3
-                st.rerun()
+            st.session_state.stage = 3
+            st.rerun()
         else:
-            st.warning("⚠️ 오판된 발음이 있습니다. 오답 힌트를 확인하고 다시 수정해 보세요!")
+            st.warning("⚠️ 틀린 발음이 있습니다. 아래 힌트를 보고 정정해 보세요!")
+            for fb in wrong_feedback:
+                st.write(fb)
 
 # -------------------------------------------------------------
 # MISSION 03: 가나다 상담소 (규칙 분석)
@@ -211,21 +203,18 @@ elif st.session_state.stage == 3:
         default=["디귿(ㄷ)"]
     )
     
-    if st.button("🔎 진술 확인"):
+    if st.button("🔎 진술 확인 및 다음 미션으로"):
         is_q1_correct = "구개음화" in q3_1
         expected_set = {"디귿(ㄷ)", "지읒(ㅈ)", "치읓(ㅊ)", "티읕(ㅌ)", "히읗(ㅎ)"}
         is_q2_correct = set(q3_2) == expected_set
         
         if is_q1_correct and is_q2_correct:
             st.session_state.score += 20
-            st.balloons()
-            st.success("🎉 완벽한 수사보고서입니다! 제16항의 예외 규정을 정확히 파악하셨습니다. (+20점)")
-            if st.button("다음 사건(MISSION 04)으로 이동 ➡️"):
-                st.session_state.stage = 4
-                st.rerun()
+            st.session_state.stage = 4
+            st.rerun()
         else:
             if not is_q1_correct:
-                st.error("Q1 오답: 'ㄷ'이 'ㅣ'를 만나 'ㅈ'이 된다고 착각하는 것은 '구개음화' 때문입니다.")
+                st.error("Q1 오답: 'ㄷ'이 'ㅣ'를 만나 'ㅈ'이 된다고 생각한 것은 '구개음화' 때문입니다.")
             if not is_q2_correct:
                 st.error("Q2 오답: 예외적으로 [ㅅ]으로 연음되는 자모는 'ㄷ, ㅈ, ㅊ, ㅌ, ㅎ' 총 5개입니다. (키읔, 피읖 제외)")
 
@@ -251,16 +240,13 @@ elif st.session_state.stage == 4:
     st.write("💡 **보너스 규칙:** 원래 첫 음절에서 길게 발음되던 단어에 **모음 어미나 피/사동 접미사**가 붙으면 소리가 어떻게 되나요?")
     bonus = st.radio("밟다[발:따] ➡️ 밟히다[?]", ["여전히 긴소리 [발:피다]", "짧아진소리 [발피다]"])
     
-    if st.button("⏱️ 소리 파형 감식"):
+    if st.button("⏱️ 소리 파형 감식 및 다음 미션으로"):
         if ans_a == "긴소리(장음) [문:고]" and ans_b == "짧은소리(단음) [묻꼬]" and bonus == "짧아진소리 [발피다]":
             st.session_state.score += 20
-            st.balloons()
-            st.success("🎯 정확한 분석입니다! 질문은 길게[문:고], 파묻기는 짧게[묻꼬]이며, 접사 결합 시 소리가 짧아집니다! (+20점)")
-            if st.button("다음 사건(MISSION 05)으로 이동 ➡️"):
-                st.session_state.stage = 5
-                st.rerun()
+            st.session_state.stage = 5
+            st.rerun()
         else:
-            st.error("🚨 소리의 길이에 오차가 있습니다. 대화 상황을 천천히 읽어보며 다시 감식해 보세요!")
+            st.error("🚨 소리의 길이에 오차가 있습니다. 대화 상황을 다시 확인해 보세요! (질문=장음, 매몰=단음, 접사결합=단음화)")
 
 # -------------------------------------------------------------
 # MISSION 05: 외래어 발음 토론 (구글 시트 자동 전송)
@@ -281,7 +267,7 @@ elif st.session_state.stage == 5:
         if len(opinion.strip()) < 10:
             st.warning("수사관님, 최종 의견과 근거를 최소 10자 이상 성의 있게 작성해 주세요!")
         else:
-            # 📌 여기에 큰따옴표 딱 하나씩만 넣고 Apps Script 배포 URL을 입력하세요!
+            # 📌 발급받으신 웹 앱 URL (AKfycb... 로 시작하는 URL)을 아래 큰따옴표 안에 넣어주세요!
             GAS_WEB_APP_URL = "여기에_선생님의_구글_웹앱_URL을_입력하세요"
 
             payload = {
@@ -308,7 +294,7 @@ elif st.session_state.stage == 5:
 # 엔딩: 1급 국어 수사관 임명장
 # -------------------------------------------------------------
 elif st.session_state.stage == 6:
-    st.markdown("<h2 style='text-align: center;'>🎖️ 감일고 1급 국어 수사관 임명장 🎖️</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 style='text-align: center;'>🎖️ 1급 국어 수사관 임명장 🎖️</h2>", unsafe_allow_html=True)
     st.write("")
     
     st.info(f"""
