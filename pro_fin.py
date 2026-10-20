@@ -14,6 +14,26 @@ def safe_rerun():
     elif hasattr(st, "experimental_rerun"):
         st.experimental_rerun()
 
+# 🔑 공통 교사용 마스터 점프 함수
+def render_teacher_pass(unique_key):
+    st.write("---")
+    with st.expander("🔒 교사 전용"):
+        col_t1, col_t2 = st.columns([3, 1])
+        with col_t1:
+            pw = st.text_input("비밀번호 입력", type="password", key=f"t_pw_{unique_key}", label_visibility="collapsed", placeholder="교사용 비밀번호")
+        with col_t2:
+            if st.button("확인", key=f"t_btn_{unique_key}"):
+                if pw.strip() == "01063052122":
+                    if not st.session_state.student_id:
+                        st.session_state.student_id = "교사용"
+                    if not st.session_state.user_name:
+                        st.session_state.user_name = "선생님"
+                    st.session_state.score = 130
+                    st.session_state.stage = 7  # 최종 임명장 화면
+                    safe_rerun()
+                else:
+                    st.error("비밀번호 불일치")
+
 st.markdown("""
 <style>
     .main-title { font-size: 2.2rem !important; font-weight: 800; color: #1E3A8A; text-align: center; margin-bottom: 5px; }
@@ -28,7 +48,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# 2. 게임 세션 상태 초기화
+# 2. 세션 상태 초기화 (총 6개 스테이지: 1-1, 1-2, 2, 3, 4, 5)
 if "stage" not in st.session_state:
     st.session_state.stage = 1
 if "score" not in st.session_state:
@@ -38,9 +58,9 @@ if "user_name" not in st.session_state:
 if "student_id" not in st.session_state:
     st.session_state.student_id = ""
 if "max_stages" not in st.session_state:
-    st.session_state.max_stages = 5
+    st.session_state.max_stages = 6
 
-# --- 인트로 화면 (학번/이름 입력 & 교사용 마스터키) ---
+# --- 인트로 화면 ---
 if st.session_state.stage == 1 and not st.session_state.user_name:
     st.markdown("<div class='main-title'>🕵️ 국어 수사대: 사라진 표준 발음을 찾아라!</div>", unsafe_allow_html=True)
     st.markdown("<div class='subtitle'>교과서 속 모든 음운 변동과 표준 발음법 조항을 완전 정복하는 최종 수사 작전!</div>", unsafe_allow_html=True)
@@ -67,8 +87,9 @@ if st.session_state.stage == 1 and not st.session_state.user_name:
             </div>
             <div style="background-color: #BBF7D0; color: #1E293B; padding: 12px 18px; border-radius: 8px; font-weight: bold;">
                 📌 오늘의 수사 미션<br>
-                Mission 01. 10개 단어 & 조항 매칭<br>
-                Mission 02. 연설문 20개 단어 발음 감식<br>
+                Mission 01-1. 교체 단어 5개 검거<br>
+                Mission 01-2. 탈락/첨가/축약 5개 검거<br>
+                Mission 02. 연설문 20개 단어 감식<br>
                 Mission 03. 한글 자모 발음 특례<br>
                 Mission 04. 소리의 길이(장단음) 수사<br>
                 Mission 05. 외래어 표준 판결
@@ -92,41 +113,69 @@ if st.session_state.stage == 1 and not st.session_state.user_name:
         else:
             st.error("학번과 이름을 모두 입력해야 수사관 배지가 발급됩니다!")
             
-    # 🔑 선생님 전용 비밀번호 빠른 확인 구역
-    st.write("---")
-    with st.expander("🔒 [교사 전용] 최종 결과 페이지 즉시 확인"):
-        teacher_pw = st.text_input("교사용 비밀번호를 입력하세요:", type="password", key="teacher_pw_input")
-        if st.button("교사 확인 (마지막 화면 이동)", key="btn_teacher_pass"):
-            if teacher_pw.strip() == "01063052122":
-                st.session_state.student_id = "교사용"
-                st.session_state.user_name = "선생님"
-                st.session_state.score = 130
-                st.session_state.stage = 6
-                safe_rerun()
-            else:
-                st.error("비밀번호가 일치하지 않습니다.")
+    render_teacher_pass("intro")
     st.stop()
 
 # --- 사이드바 ---
-progress_pct = (st.session_state.stage - 1) / st.session_state.max_stages
+progress_pct = min(1.0, (st.session_state.stage - 1) / st.session_state.max_stages)
 st.sidebar.markdown(f"### 🎖️ {st.session_state.student_id} {st.session_state.user_name} 수사관")
 st.sidebar.markdown(f"**현재 수사 진행률:** {int(progress_pct * 100)}%")
 st.sidebar.progress(progress_pct)
 st.sidebar.markdown(f"**누적 수사 점수:** {st.session_state.score}점 🌟")
 
 # -------------------------------------------------------------
-# MISSION 01: 1번 활동 10개 단어 전체 조항 매칭
+# MISSION 01-1: 음운의 교체 5단어
 # -------------------------------------------------------------
 if st.session_state.stage == 1:
-    st.markdown("<div class='mission-header'>🎯 MISSION 01: 10개 단어의 표준 발음과 조항을 검거하라!</div>", unsafe_allow_html=True)
-    st.info("교과서 1번 활동에 제시된 10개 단어의 올바른 발음과 해당 표준 발음법 조항을 빠짐없이 선택하세요.")
+    st.markdown("<div class='mission-header'>🎯 MISSION 01-1: 음운 교체 현상 단어 5개 검거!</div>", unsafe_allow_html=True)
+    st.info("교과서 1번 활동 중 '음운의 교체'에 해당하는 5개 단어의 발음과 조항을 선택하세요.")
 
-    m1_list = [
+    m1_1_list = [
         {"w": "꽃", "p_ans": "꼳", "p_opts": ["꽃", "꼿", "꼳"], "r_ans": "제9항(음절끝소리)", "r_opts": ["제9항(음절끝소리)", "제17항(구개음화)", "제18항(비음화)"]},
         {"w": "국물", "p_ans": "궁물", "p_opts": ["궁물", "국물", "군물"], "r_ans": "제18항(비음화)", "r_opts": ["제18항(비음화)", "제20항(유음화)", "제23항(된소리)"]},
         {"w": "신라", "p_ans": "실라", "p_opts": ["신나", "신라", "실라"], "r_ans": "제20항(유음화)", "r_opts": ["제20항(유음화)", "제18항(비음화)", "제17항(구개음화)"]},
         {"w": "숙제", "p_ans": "숙쩨", "p_opts": ["숙제", "숙쩨", "수쩨"], "r_ans": "제23항(된소리되기)", "r_opts": ["제23항(된소리되기)", "제9항(음절끝소리)", "제12항(거센소리)"]},
         {"w": "같이", "p_ans": "가치", "p_opts": ["가티", "갇이", "가치"], "r_ans": "제17항(구개음화)", "r_opts": ["제17항(구개음화)", "제11항(자음군단순화)", "제15항(연음/탈락)"]},
+    ]
+
+    cols = st.columns(2)
+    user_m1_1 = []
+    for idx, item in enumerate(m1_1_list):
+        c = cols[idx % 2]
+        with c:
+            st.markdown(f"**단어 {idx+1}. `{item['w']}`**")
+            p_val = st.selectbox(f"'{item['w']}'의 표준 발음", item["p_opts"], key=f"m11_p_{idx}")
+            r_val = st.selectbox(f"'{item['w']}'의 적용 조항", item["r_opts"], key=f"m11_r_{idx}")
+            user_m1_1.append((p_val, r_val))
+
+    st.write("")
+    if st.button("🚨 1-1차 검증 완료 및 다음(1-2차)으로 이동 (클릭)", key="btn_m1_1"):
+        correct_cnt = 0
+        wrongs = []
+        for idx, (p_v, r_v) in enumerate(user_m1_1):
+            target = m1_1_list[idx]
+            if p_v == target["p_ans"] and r_v == target["r_ans"]:
+                correct_cnt += 1
+            else:
+                wrongs.append(f"{target['w']} (정답: [{target['p_ans']}], {target['r_ans']})")
+        
+        if correct_cnt == 5:
+            st.session_state.score += 15
+            st.session_state.stage = 2
+            safe_rerun()
+        else:
+            st.error(f"❌ 5개 중 {correct_cnt}개 일치합니다. 잘못된 항목을 수정해 주세요:\n- " + "\n- ".join(wrongs))
+
+    render_teacher_pass("m1_1")
+
+# -------------------------------------------------------------
+# MISSION 01-2: 탈락 / 첨가 / 축약 5단어
+# -------------------------------------------------------------
+elif st.session_state.stage == 2:
+    st.markdown("<div class='mission-header'>🎯 MISSION 01-2: 탈락 / 첨가 / 축약 단어 5개 검거!</div>", unsafe_allow_html=True)
+    st.info("교과서 1번 활동 중 '탈락, 첨가, 축약'에 해당하는 5개 단어의 발음과 조항을 선택하세요.")
+
+    m1_2_list = [
         {"w": "맨입", "p_ans": "맨닙", "p_opts": ["매닙", "맨입", "맨닙"], "r_ans": "제29항(ㄴ첨가)", "r_opts": ["제29항(ㄴ첨가)", "제22항(반모음첨가)", "제9항(음절끝소리)"]},
         {"w": "흙", "p_ans": "흑", "p_opts": ["흘", "흑", "흟"], "r_ans": "제11항(자음군단순화)", "r_opts": ["제11항(자음군단순화)", "제12항(거센소리)", "제23항(된소리)"]},
         {"w": "좋고", "p_ans": "조코", "p_opts": ["졷고", "조코", "좋고"], "r_ans": "제12항(거센소리되기)", "r_opts": ["제12항(거센소리되기)", "제11항(자음군단순화)", "제23항(된소리)"]},
@@ -135,37 +184,39 @@ if st.session_state.stage == 1:
     ]
 
     cols = st.columns(2)
-    user_m1 = []
-    for idx, item in enumerate(m1_list):
+    user_m1_2 = []
+    for idx, item in enumerate(m1_2_list):
         c = cols[idx % 2]
         with c:
             st.markdown(f"**단어 {idx+1}. `{item['w']}`**")
-            p_val = st.selectbox(f"'{item['w']}'의 표준 발음", item["p_opts"], key=f"m1_p_{idx}")
-            r_val = st.selectbox(f"'{item['w']}'의 적용 조항", item["r_opts"], key=f"m1_r_{idx}")
-            user_m1.append((p_val, r_val))
+            p_val = st.selectbox(f"'{item['w']}'의 표준 발음", item["p_opts"], key=f"m12_p_{idx}")
+            r_val = st.selectbox(f"'{item['w']}'의 적용 조항", item["r_opts"], key=f"m12_r_{idx}")
+            user_m1_2.append((p_val, r_val))
 
     st.write("")
-    if st.button("🚨 10개 단어 감식 결과 제출 및 다음 미션으로 (클릭)", key="btn_m1"):
+    if st.button("🚨 1-2차 검증 완료 및 활동 2로 이동 (클릭)", key="btn_m1_2"):
         correct_cnt = 0
         wrongs = []
-        for idx, (p_v, r_v) in enumerate(user_m1):
-            target = m1_list[idx]
+        for idx, (p_v, r_v) in enumerate(user_m1_2):
+            target = m1_2_list[idx]
             if p_v == target["p_ans"] and r_v == target["r_ans"]:
                 correct_cnt += 1
             else:
                 wrongs.append(f"{target['w']} (정답: [{target['p_ans']}], {target['r_ans']})")
         
-        if correct_cnt == 10:
-            st.session_state.score += 30
-            st.session_state.stage = 2
+        if correct_cnt == 5:
+            st.session_state.score += 15
+            st.session_state.stage = 3
             safe_rerun()
         else:
-            st.error(f"❌ 총 10개 중 {correct_cnt}개만 일치합니다. 잘못된 항목을 확인하고 수정해 주세요:\n- " + "\n- ".join(wrongs))
+            st.error(f"❌ 5개 중 {correct_cnt}개 일치합니다. 잘못된 항목을 수정해 주세요:\n- " + "\n- ".join(wrongs))
+
+    render_teacher_pass("m1_2")
 
 # -------------------------------------------------------------
 # MISSION 02: 2번 활동 연설문 밑줄 친 20개 단어 전체
 # -------------------------------------------------------------
-elif st.session_state.stage == 2:
+elif st.session_state.stage == 3:
     st.markdown("<div class='mission-header'>📜 MISSION 02: 회장 선거 연설문 20개 단어 전면 감식!</div>", unsafe_allow_html=True)
     st.info("교과서 2번 활동의 밑줄 친 20개 단어 발음을 대괄호 없이 소리대로 정확히 적어주세요! (복수 표준발음은 둘다 써야 함, '되어'에서 '뒈' 허용 발음은 제외)")
 
@@ -204,15 +255,17 @@ elif st.session_state.stage == 2:
 
         if pass_cnt == 20:
             st.session_state.score += 40
-            st.session_state.stage = 3
+            st.session_state.stage = 4
             safe_rerun()
         else:
             st.error(f"⚠️ 20개 중 {pass_cnt}개 일치! 틀린 항목을 다시 확인해 보세요:\n- " + "\n- ".join(wrongs))
 
+    render_teacher_pass("m2")
+
 # -------------------------------------------------------------
-# MISSION 03: 3번 활동 국어원 상담소 대화 시각화 & 7개 자모 전체
+# MISSION 03: 3번 활동 국어원 상담소 대화 & 7개 자모 전체
 # -------------------------------------------------------------
-elif st.session_state.stage == 3:
+elif st.session_state.stage == 4:
     st.markdown("<div class='mission-header'>💬 MISSION 03: 가나다 상담소 & 자모 발음 특례 (제16항)</div>", unsafe_allow_html=True)
     
     st.markdown("""
@@ -282,7 +335,7 @@ elif st.session_state.stage == 3:
 
         if reason_ok and jamo_all_ok:
             st.session_state.score += 25
-            st.session_state.stage = 4
+            st.session_state.stage = 5
             safe_rerun()
         else:
             err_msg = []
@@ -292,10 +345,12 @@ elif st.session_state.stage == 3:
                 err_msg.append(f"자모 발음 오답 목록: {', '.join(jamo_wrongs)}")
             st.error("❌ 수정이 필요합니다:\n- " + "\n- ".join(err_msg))
 
+    render_teacher_pass("m3")
+
 # -------------------------------------------------------------
-# MISSION 04: 4번 활동 소리의 길이 대화문 & 전체 선택형(객관식) 전환
+# MISSION 04: 4번 활동 소리의 길이 (전체 선택형)
 # -------------------------------------------------------------
-elif st.session_state.stage == 4:
+elif st.session_state.stage == 5:
     st.markdown("<div class='mission-header'>⏳ MISSION 04: 소리의 길이 (장단음 탐구 & 제7항)</div>", unsafe_allow_html=True)
     
     st.markdown("""
@@ -394,7 +449,7 @@ elif st.session_state.stage == 4:
 
         if part1_ok and part2_ok:
             st.session_state.score += 25
-            st.session_state.stage = 5
+            st.session_state.stage = 6
             safe_rerun()
         else:
             errs = []
@@ -404,10 +459,12 @@ elif st.session_state.stage == 4:
                 errs.append(f"12개 단어 장단음 판별 오답: {', '.join(wrongs)}")
             st.error("❌ 오차가 발견되었습니다:\n- " + "\n- ".join(errs))
 
+    render_teacher_pass("m4")
+
 # -------------------------------------------------------------
 # MISSION 05: 5번 활동 외래어 발음 토론 & 구글 시트 전송
 # -------------------------------------------------------------
-elif st.session_state.stage == 5:
+elif st.session_state.stage == 6:
     st.markdown("<div class='mission-header'>🌐 MISSION 05: 외래어 발음 조사 & 나만의 표준 발음 제정</div>", unsafe_allow_html=True)
     st.markdown("교과서 5번 활동입니다. 표준 발음이 아직 정해지지 않은 외래어에 대해 나만의 표준 발음과 근거를 제시해 주세요.")
 
@@ -430,7 +487,7 @@ elif st.session_state.stage == 5:
         if len(opinion.strip()) < 15:
             st.warning("수사관님, 타당한 근거와 이유를 최소 15자 이상 성의 있게 서술해 주세요!")
         else:
-            # 📌 발급받으신 Apps Script 웹 앱 URL을 아래 큰따옴표 안에 입력하세요.
+            # 📌 발급받으신 Apps Script 웹 앱 URL을 아래에 입력하세요.
             GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbw9W3FvLg_SAMPLE_REPLACE_ME/exec"
 
             payload = {
@@ -450,13 +507,15 @@ elif st.session_state.stage == 5:
                     pass
 
             st.session_state.score += 10
-            st.session_state.stage = 6
+            st.session_state.stage = 7  # 임명장 화면
             safe_rerun()
 
+    render_teacher_pass("m5")
+
 # -------------------------------------------------------------
-# 엔딩: 1급 국어 수사관 임명장 & 전체 문제 복습 및 돌아가기
+# 엔딩: 1급 국어 수사관 임명장 & 전체 복습 뷰어
 # -------------------------------------------------------------
-elif st.session_state.stage == 6:
+elif st.session_state.stage == 7:
     st.markdown("<h2 style='text-align: center; color: #1E3A8A;'>🎖️ 1급 국어 수사관 임명장 🎖️</h2>", unsafe_allow_html=True)
     st.write("")
     
@@ -520,7 +579,7 @@ elif st.session_state.stage == 6:
             st.session_state.student_id = ""
             safe_rerun()
     with col_b2:
-        if st.button("🔄 미션 1단계부터 다시 수사하기", key="btn_replay"):
+        if st.button("🔄 미션 1-1단계부터 다시 수사하기", key="btn_replay"):
             st.session_state.stage = 1
             st.session_state.score = 0
             safe_rerun()
