@@ -281,11 +281,11 @@ elif st.session_state.stage == 5:
         if len(opinion.strip()) < 10:
             st.warning("수사관님, 최종 의견과 근거를 최소 10자 이상 성의 있게 작성해 주세요!")
         else:
-            # 📌 발급받으신 Google Apps Script 웹 앱 전체 URL(exec로 끝남)을 넣으세요!
-            GAS_WEB_APP_URL = ""https://script.google.com/macros/s/1qYYXLIlrS25YUYYhFwvhJdgK6d3bupUgTExYRlLHmKU/exec"
+            # 📌 여기에 큰따옴표 딱 하나씩만 넣고 Apps Script 배포 URL을 입력하세요!
+            GAS_WEB_APP_URL = "여기에_선생님의_구글_웹앱_URL을_입력하세요"
 
             payload = {
-                "sheet_name": "3차시",  # 👈 3차시 전용 탭으로 자동 저장되도록 지정
+                "sheet_name": "3차시",
                 "student_id": st.session_state.student_id,
                 "user_name": st.session_state.user_name,
                 "score": st.session_state.score + 10,
@@ -294,10 +294,11 @@ elif st.session_state.stage == 5:
                 "opinion": opinion.strip()
             }
 
-            try:
-                requests.post(GAS_WEB_APP_URL, json=payload, timeout=5)
-            except Exception:
-                pass  # 네트워크 예외 상황에서도 학생 클리어 진행
+            if GAS_WEB_APP_URL.startswith("http"):
+                try:
+                    requests.post(GAS_WEB_APP_URL, json=payload, timeout=5)
+                except Exception:
+                    pass
 
             st.session_state.score += 10
             st.session_state.stage = 6
@@ -307,7 +308,7 @@ elif st.session_state.stage == 5:
 # 엔딩: 1급 국어 수사관 임명장
 # -------------------------------------------------------------
 elif st.session_state.stage == 6:
-    st.markdown("<h2 style='text-align: center;'>🎖️ 1급 국어 수사관 임명장 🎖️</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 style='text-align: center;'>🎖️ 감일고 1급 국어 수사관 임명장 🎖️</h2>", unsafe_allow_html=True)
     st.write("")
     
     st.info(f"""
@@ -325,7 +326,7 @@ elif st.session_state.stage == 6:
     """)
     
     st.balloons()
-    st.success("🎉 최종 수사보고서가 선생님께 안전하게 전송되었습니다! 화면을 캡처해 보관하세요. 수고하셨습니다!")
+    st.success("🎉 최종 수사보고서가 전송되었습니다! 화면을 캡처해 보관하세요. 수고하셨습니다!")
     
     if st.button("처음부터 다시 도전하기 🔄"):
         st.session_state.stage = 1
