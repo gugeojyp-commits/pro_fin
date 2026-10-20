@@ -502,8 +502,8 @@ elif st.session_state.stage == 6:
         if len(opinion.strip()) < 15:
             st.warning("수사관님, 타당한 근거와 이유를 최소 15자 이상 성의 있게 서술해 주세요!")
         else:
-            # 📌 발급받으신 Apps Script 웹 앱 URL(AKfycb.../exec)을 아래 큰따옴표 안에 입력하세요.
-            GAS_WEB_APP_URL = "여기에_선생님의_웹앱_배포_URL_입력"
+            # 📌 방금 확인하신 그 웹앱 URL을 꼭 넣어주세요!
+            GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycb...선생님URL.../exec"
 
             payload = {
                 "sheet_name": "3차시",
@@ -515,17 +515,30 @@ elif st.session_state.stage == 6:
                 "opinion": opinion.strip()
             }
 
-            if GAS_WEB_APP_URL.startswith("http") and "SAMPLE_REPLACE_ME" not in GAS_WEB_APP_URL:
+            # 전송 상태 표시용 스피너
+            with st.spinner("구글 시트로 수사보고서를 안전하게 전송하는 중..."):
                 try:
-                    requests.post(GAS_WEB_APP_URL, json=payload, timeout=5)
-                except Exception:
-                    pass
-
-            st.session_state.score += 10
-            st.session_state.stage = 7  # 임명장 화면으로 이동
-            safe_rerun()
-
-    render_teacher_pass("m5")
+                    import json
+                    headers = {"Content-Type": "application/json"}
+                    
+                    # 💡 핵심: json.dumps로 직렬화 + 리디렉션 강제 허용
+                    response = requests.post(
+                        GAS_WEB_APP_URL,
+                        data=json.dumps(payload),
+                        headers=headers,
+                        timeout=10,
+                        allow_redirects=True
+                    )
+                    
+                    # 성공 여부 확인
+                    if response.status_code == 200:
+                        st.session_state.score += 10
+                        st.session_state.stage = 7  # 임명장 이동
+                        safe_rerun()
+                    else:
+                        st.error(f"구글 응답 에러 (코드 {response.status_code}): {response.text}")
+                except Exception as e:
+                    st.error(f"전송 중 네트워크 통신 오류가 발생했습니다: {e}")
 
 # -------------------------------------------------------------
 # 엔딩: 1급 국어 수사관 임명장 & 전체 복습 뷰어
