@@ -424,7 +424,7 @@ elif st.session_state.stage == 5:
 
     st.markdown("---")
     st.markdown("#### (4) 「표준 발음법」 제6항·제7항에 따른 12개 단어 소리의 길이")
-    st.info("💡 제7항: 긴소리를 가진 음절이라도 단음절 용언 어간에 모음 어미나 피/사동 접미사가 결합하면 **짧게** 발음합니다.[cite: 4]")
+    st.info("💡 제6항: 모음의 장단을 구별하여 발음하되, 단어의 첫음절에서만 긴소리가 나타나는 것을 원칙으로 한다. 제7항: 긴소리를 가진 음절이라도 단음절 용언 어간에 모음 어미나 피/사동 접미사가 결합하면 짧게 발음한다.")
 
     length_quiz = [
         {"w": "눈보라", "ans": "긴소리", "opts": ["긴소리", "짧은소리"]},
@@ -503,7 +503,7 @@ elif st.session_state.stage == 6:
             st.warning("수사관님, 타당한 근거와 이유를 최소 15자 이상 성의 있게 서술해 주세요!")
         else:
             # 📌 발급받으신 Apps Script 웹 앱 URL을 아래에 입력하세요.
-            GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbw9W3FvLg_SAMPLE_REPLACE_ME/exec"
+            GAS_WEB_APP_URL = "https://script.google.com/macros/s/1qYYXLIlrS25YUYYhFwvhJdgK6d3bupUgTExYRlLHmKU/exec"
 
             payload = {
                 "sheet_name": "3차시",
