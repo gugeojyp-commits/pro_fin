@@ -20,6 +20,11 @@ st.markdown("""
     .subtitle { font-size: 1.1rem; color: #4B5563; text-align: center; margin-bottom: 25px; }
     .mission-header { background-color: #F1F5F9; border-left: 6px solid #1E3A8A; padding: 15px; border-radius: 6px; margin-bottom: 20px; font-weight: bold; font-size: 1.2rem; }
     .stTextInput>div>div>input { font-weight: bold; }
+    
+    /* 대화 상자 UI 스타일 */
+    .chat-bubble-user { background-color: #EBF8FF; border: 2px solid #BEE3F8; border-radius: 12px; padding: 15px; margin-bottom: 12px; }
+    .chat-bubble-ans { background-color: #FFF5F5; border: 2px solid #FED7D7; border-radius: 12px; padding: 15px; margin-bottom: 20px; }
+    .dialogue-box { background-color: #F7FAFC; border: 2px solid #E2E8F0; border-radius: 12px; padding: 18px; margin-bottom: 20px; font-size: 1.05rem; line-height: 1.7; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -35,7 +40,7 @@ if "student_id" not in st.session_state:
 if "max_stages" not in st.session_state:
     st.session_state.max_stages = 5
 
-# --- 인트로 화면 ---
+# --- 인트로 화면 (학번/이름 입력 & 교사용 마스터키) ---
 if st.session_state.stage == 1 and not st.session_state.user_name:
     st.markdown("<div class='main-title'>🕵️ 국어 수사대: 사라진 표준 발음을 찾아라!</div>", unsafe_allow_html=True)
     st.markdown("<div class='subtitle'>교과서 속 모든 음운 변동과 표준 발음법 조항을 완전 정복하는 최종 수사 작전!</div>", unsafe_allow_html=True)
@@ -86,6 +91,20 @@ if st.session_state.stage == 1 and not st.session_state.user_name:
             safe_rerun()
         else:
             st.error("학번과 이름을 모두 입력해야 수사관 배지가 발급됩니다!")
+            
+    # 🔑 선생님 전용 비밀번호 빠른 확인 구역
+    st.write("---")
+    with st.expander("🔒 [교사 전용] 최종 결과 페이지 즉시 확인"):
+        teacher_pw = st.text_input("교사용 비밀번호를 입력하세요:", type="password", key="teacher_pw_input")
+        if st.button("교사 확인 (마지막 화면 이동)", key="btn_teacher_pass"):
+            if teacher_pw.strip() == "01063052122":
+                st.session_state.student_id = "교사용"
+                st.session_state.user_name = "선생님"
+                st.session_state.score = 130
+                st.session_state.stage = 6
+                safe_rerun()
+            else:
+                st.error("비밀번호가 일치하지 않습니다.")
     st.stop()
 
 # --- 사이드바 ---
@@ -106,7 +125,7 @@ if st.session_state.stage == 1:
         {"w": "꽃", "p_ans": "꼳", "p_opts": ["꽃", "꼿", "꼳"], "r_ans": "제9항(음절끝소리)", "r_opts": ["제9항(음절끝소리)", "제17항(구개음화)", "제18항(비음화)"]},
         {"w": "국물", "p_ans": "궁물", "p_opts": ["궁물", "국물", "군물"], "r_ans": "제18항(비음화)", "r_opts": ["제18항(비음화)", "제20항(유음화)", "제23항(된소리)"]},
         {"w": "신라", "p_ans": "실라", "p_opts": ["신나", "신라", "실라"], "r_ans": "제20항(유음화)", "r_opts": ["제20항(유음화)", "제18항(비음화)", "제17항(구개음화)"]},
-        {"w": "숙제", "p_ans": "숙 crappy".replace("crappy", "private"), "p_ans": "숙private".replace("private", "쩨"), "p_opts": ["숙제", "숙쩨", "수쩨"], "r_ans": "제23항(된소리되기)", "r_opts": ["제23항(된소리되기)", "제9항(음절끝소리)", "제12항(거센소리)"]},
+        {"w": "숙제", "p_ans": "숙쩨", "p_opts": ["숙제", "숙쩨", "수쩨"], "r_ans": "제23항(된소리되기)", "r_opts": ["제23항(된소리되기)", "제9항(음절끝소리)", "제12항(거센소리)"]},
         {"w": "같이", "p_ans": "가치", "p_opts": ["가티", "갇이", "가치"], "r_ans": "제17항(구개음화)", "r_opts": ["제17항(구개음화)", "제11항(자음군단순화)", "제15항(연음/탈락)"]},
         {"w": "맨입", "p_ans": "맨닙", "p_opts": ["매닙", "맨입", "맨닙"], "r_ans": "제29항(ㄴ첨가)", "r_opts": ["제29항(ㄴ첨가)", "제22항(반모음첨가)", "제9항(음절끝소리)"]},
         {"w": "흙", "p_ans": "흑", "p_opts": ["흘", "흑", "흟"], "r_ans": "제11항(자음군단순화)", "r_opts": ["제11항(자음군단순화)", "제12항(거센소리)", "제23항(된소리)"]},
@@ -148,7 +167,7 @@ if st.session_state.stage == 1:
 # -------------------------------------------------------------
 elif st.session_state.stage == 2:
     st.markdown("<div class='mission-header'>📜 MISSION 02: 회장 선거 연설문 20개 단어 전면 감식!</div>", unsafe_allow_html=True)
-    st.info("교과서 2번 활동의 밑줄 친 20개 단어 발음을 대괄호 없이 소리대로 정확히 적어주세요! (복수 표준발음은 둘다 써야 함, 참고로 '되어'에서 '되'를 '뒈'로 허용하는 발음은 정답으로 처리하지 않았습니다.)")
+    st.info("교과서 2번 활동의 밑줄 친 20개 단어 발음을 대괄호 없이 소리대로 정확히 적어주세요! (복수 표준발음은 둘다 써야 함, '되어'에서 '뒈' 허용 발음은 제외)")
 
     st.markdown("""
     > "안녕하세요. 우리 반 회장 선거에 출마한 강태양입니다. 제 공약을 **<u>짧고</u>** **<u>굵게</u>** 말씀드리겠습니다.  
@@ -159,7 +178,7 @@ elif st.session_state.stage == 2:
     """, unsafe_allow_html=True)
 
     words_20 = [
-        {"w": "짧고", "ans": ["짤꼬"]}, {"w": "굵게", "ans": ["굴께"]}, {"w": "의견란", "ans": ["의견난"]}, {"w": "건의", "ans": ["거늬, 거니", "거늬,거니", "거니,거늬", "거니,거늬", "거니거늬", "거늬거니" ]},
+        {"w": "짧고", "ans": ["짤꼬"]}, {"w": "굵게", "ans": ["굴께"]}, {"w": "의견란", "ans": ["의견난"]}, {"w": "건의", "ans": ["거늬, 거니", "거늬,거니", "거니,거늬", "거니, 거늬", "거니거늬", "거늬거니"]},
         {"w": "듣고", "ans": ["듣꼬"]}, {"w": "폭넓게", "ans": ["퐁널께"]}, {"w": "곳곳에", "ans": ["곧꼬세"]}, {"w": "꽃을", "ans": ["꼬츨"]},
         {"w": "삭막한", "ans": ["상마칸"]}, {"w": "실내", "ans": ["실래"]}, {"w": "학급", "ans": ["학끕"]}, {"w": "책꽂이", "ans": ["책꼬지"]},
         {"w": "놓아", "ans": ["노아"]}, {"w": "읽는", "ans": ["잉는"]}, {"w": "기를 수", "ans": ["기를쑤"]}, {"w": "끝으로", "ans": ["끄트로"]},
@@ -191,13 +210,25 @@ elif st.session_state.stage == 2:
             st.error(f"⚠️ 20개 중 {pass_cnt}개 일치! 틀린 항목을 다시 확인해 보세요:\n- " + "\n- ".join(wrongs))
 
 # -------------------------------------------------------------
-# MISSION 03: 3번 활동 국어원 상담소 & 7개 자모 21개 조사 결합형 전체
+# MISSION 03: 3번 활동 국어원 상담소 대화 시각화 & 7개 자모 전체
 # -------------------------------------------------------------
 elif st.session_state.stage == 3:
     st.markdown("<div class='mission-header'>💬 MISSION 03: 가나다 상담소 & 자모 발음 특례 (제16항)</div>", unsafe_allow_html=True)
-    st.markdown("교과서 3번 활동입니다. 자모 뒤에 조사가 결합할 때의 발음 원리를 탐구하세요.")
+    
+    # 📌 교과서 3번 상단 대화문 시각화
+    st.markdown("""
+    <div class="chat-bubble-user">
+        <b>🙋‍♂️ 질문자 학생:</b><br>
+        ‘디귿인가’는 [디그진가]로, ‘티읕인가’는 [티으친가]로 발음하는 게 맞죠? 그리고 ‘디귿을’은 [디그즐], ‘티읕을’은 [티으츨]로 발음해야 하고요.<br>
+        이 발음이 맞는다고 알고 있는데, 실제로는 [디그신가], [티으신가], [디그슬], [티으슬]로 발음해서 질문드립니다.
+    </div>
+    <div class="chat-bubble-ans">
+        <b>👩‍🏫 국립국어원 상담관 답변:</b><br>
+        안녕하십니까? ‘디귿인가’는 <b>[디그신가]</b>로, ‘티읕인가’는 <b>[티으신가]</b>로, ‘디귿을’은 <b>[디그슬]</b>로, ‘티읕을’은 <b>[티으슬]</b>로 발음해야 합니다. 이와 관련하여 <b>「표준 발음법」 제16항</b>의 내용을 참고하시기 바랍니다.
+    </div>
+    """, unsafe_allow_html=True)
 
-    st.markdown("#### (1) 질문자가 해당 발음이 맞다고 생각한 까닭 추측")
+    st.markdown("#### (1) 위 상담 사례에서 질문자가 해당 발음이 맞는다고 생각한 까닭 추측")
     q3_reason = st.selectbox(
         "질문자가 [디그진가], [티으친가]가 맞다고 생각한 문법적 까닭은?",
         [
@@ -211,7 +242,7 @@ elif st.session_state.stage == 3:
 
     st.markdown("---")
     st.markdown("#### (2) 다음 말들의 표준 발음을 정확하게 완성해 보세요 (제16항 적용)")
-    st.info("💡 주의: '디귿, 지읒, 치읓, 티읕, 히읗'은 모음 조사 앞에서 [ㅅ]으로 소리 납니다! (예: 디귿이 ➡️ 디그시)")
+    st.info("💡 제16항: 한글 자모 이름에 모음 조사가 붙을 때 '디귿, 지읒, 치읓, 티읕, 히읗'은 [ㅅ]으로 연음됩니다! (예: 디귿이 ➡️ 디그시)")
 
     jamo_list = [
         {"j": "디귿", "ans_i": "디그시", "ans_ul": "디그슬", "ans_e": "디그세"},
@@ -223,7 +254,6 @@ elif st.session_state.stage == 3:
         {"j": "히읗", "ans_i": "히으시", "ans_ul": "히으슬", "ans_e": "히으세"},
     ]
 
-    cols = st.columns(3)
     u_jamo = {}
     for idx, item in enumerate(jamo_list):
         j = item["j"]
@@ -264,13 +294,23 @@ elif st.session_state.stage == 3:
             st.error("❌ 수정이 필요합니다:\n- " + "\n- ".join(err_msg))
 
 # -------------------------------------------------------------
-# MISSION 04: 4번 활동 소리의 길이 (대화 분석 + 제7항 12개 단어 전체)
+# MISSION 04: 4번 활동 소리의 길이 대화문 시각화 & 12개 단어
 # -------------------------------------------------------------
 elif st.session_state.stage == 4:
     st.markdown("<div class='mission-header'>⏳ MISSION 04: 소리의 길이 (장단음 탐구 & 제7항)</div>", unsafe_allow_html=True)
-    st.markdown("교과서 4번 활동의 대화 탐구와 제6·7항 규정에 따른 소리의 길이를 판별하세요.")
+    
+    # 📌 교과서 4번 상단 대화문 시각화
+    st.markdown("""
+    <div class="dialogue-box">
+        <b>대영:</b> 아, 아까 지수 반응을 보니 내가 뭘 잘못한 것 같은데, 그게 뭔지 모르겠어.<br>
+        <b>부연:</b> 음, 그럼 지수랑 솔직하게 대화를 해 보는 게 어때?<br>
+        <b>대영:</b> 음……. 확실히 내 잘못을 <b>묻고</b> 가야겠어.<br>
+        <b>부연:</b> 아니, 솔직하게 대화를 해 보라니까? 이대로 네 잘못을 <b>묻고</b> 끝내지 말고!<br>
+        <b>대영:</b> 그러니까 잘못을 <b>묻는 게 아니라 묻는다고!</b>
+    </div>
+    """, unsafe_allow_html=True)
 
-    st.markdown("#### (1)~(3) 대영과 부연의 대화 분석")
+    st.markdown("#### (1) 대영과 부연이 의도하고 이해한 '묻다'의 뜻과 표준 발음")
     col1, col2 = st.columns(2)
     with col1:
         st.markdown("**대영이 의도한 '묻다' (질문)**")
@@ -281,8 +321,8 @@ elif st.session_state.stage == 4:
         ans_bury_mean = st.text_input("뜻 (예: 파묻다/덮어두다):", key="m4_bury_m").strip()
         ans_bury_sound = st.selectbox("표준 발음 (소리의 길이):", ["선택...", "짧은소리 [묻따]", "긴소리 [문:따]"], key="m4_bury_s")
 
-    st.markdown("**대영의 마지막 말에 쓰인 '묻는'의 발음 채점**")
-    st.write("“그러니까 잘못을 묻는[ 1 ] 게 아니라 묻는[ 2 ]다고!”")
+    st.markdown("#### (3) 대영의 마지막 말에 쓰인 '묻는'의 발음 채점")
+    st.write("“그러니까 잘못을 **묻는[ 1 ]** 게 아니라 **묻는[ 2 ]**다고!”")
     cm1, cm2 = st.columns(2)
     with cm1:
         ans_mun1 = cm1.text_input("첫 번째 묻는 (파묻다) 발음:", key="m4_mun1").strip()
@@ -293,7 +333,6 @@ elif st.session_state.stage == 4:
     st.markdown("#### (4) 「표준 발음법」 제6항·제7항에 따른 12개 단어 소리의 길이")
     st.info("💡 제7항: 긴소리를 가진 음절이라도 단음절 용언 어간에 모음 어미나 피/사동 접미사가 결합하면 **짧게** 발음합니다.")
 
-    # 교과서 하단 12개 단어 전체
     length_quiz = [
         {"w": "눈보라", "ans": "긴소리", "opts": ["긴소리", "짧은소리"]},
         {"w": "첫눈", "ans": "짧은소리", "opts": ["긴소리", "짧은소리"]},
@@ -368,7 +407,7 @@ elif st.session_state.stage == 5:
         if len(opinion.strip()) < 15:
             st.warning("수사관님, 타당한 근거와 이유를 최소 15자 이상 성의 있게 서술해 주세요!")
         else:
-            # 📌 여기에 발급받으신 Apps Script 웹 앱 URL(AKfycb.../exec)을 입력하세요.
+            # 📌 여기에 발급받으신 Apps Script 웹 앱 URL을 입력하세요.
             GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbw9W3FvLg_SAMPLE_REPLACE_ME/exec"
 
             payload = {
@@ -392,7 +431,7 @@ elif st.session_state.stage == 5:
             safe_rerun()
 
 # -------------------------------------------------------------
-# 엔딩: 1급 국어 수사관 임명장
+# 엔딩: 1급 국어 수사관 임명장 & 전체 문제 복습 및 돌아가기
 # -------------------------------------------------------------
 elif st.session_state.stage == 6:
     st.markdown("<h2 style='text-align: center; color: #1E3A8A;'>🎖️ 1급 국어 수사관 임명장 🎖️</h2>", unsafe_allow_html=True)
@@ -414,9 +453,51 @@ elif st.session_state.stage == 6:
     
     st.success("🎉 모든 수사 미션을 완료하고 결과가 전송되었습니다! 위 임명장을 캡처해 과제방에 인증해 주세요.")
     
-    if st.button("처음부터 다시 도전하기 🔄", key="btn_reset"):
-        st.session_state.stage = 1
-        st.session_state.score = 0
-        st.session_state.user_name = ""
-        st.session_state.student_id = ""
-        safe_rerun()
+    # 📌 한 번에 전 문항의 정답과 조항을 복습할 수 있는 요약 뷰어
+    with st.expander("📋 [전체 수사 기록 종합 검토서] 모든 문제 정답 한눈에 확인하기", expanded=True):
+        st.markdown("""
+        #### 🎯 활동 1: 10개 단어와 표준 발음법 조항 매칭
+        - **꽃**: `[꼳]` ➔ 제9항(음절의 끝소리 규칙)
+        - **국물**: `[궁물]` ➔ 제18항(비음화)
+        - **신라**: `[실라]` ➔ 제20항(유음화)
+        - **숙제**: `[숙쩨]` ➔ 제23항(된소리되기)
+        - **같이**: `[가치]` ➔ 제17항(구개음화)
+        - **맨입**: `[맨닙]` ➔ 제29항(ㄴ 첨가)
+        - **흙**: `[흑]` ➔ 제11항(자음군 단순화)
+        - **좋고**: `[조코]` ➔ 제12항(거센소리되기)
+        - **다쳐서**: `[다처서]` ➔ 제15항(반모음 'j' 탈락)
+        - **뛰어**: `[뛰어 / 뛰여]` ➔ 제22항(반모음 'j' 첨가 허용)
+        
+        ---
+        #### 📜 활동 2: 연설문 20개 단어 표준 발음
+        - 짧고 `[짤꼬]`, 굵게 `[굴께]`, 의견란 `[의견난]`, 건의 `[거늬 / 거니]`
+        - 듣고 `[듣꼬]`, 폭넓게 `[퐁널께]`, 곳곳에 `[곧꼬세]`, 꽃을 `[꼬츨]`
+        - 삭막한 `[상마칸]`, 실내 `[실래]`, 학급 `[학끕]`, 책꽂이 `[책꼬지]`
+        - 놓아 `[노아]`, 읽는 `[잉는]`, 기를 수 `[기를쑤]`, 끝으로 `[끄트로]`
+        - 궂은일 `[구즌닐]`, 되어 `[되어 / 되여]`, 같이 `[가치]`, 행복한 `[행보칸]`
+        
+        ---
+        #### 💬 활동 3: 자모의 발음 특례 (제16항)
+        - **디귿, 지읒, 치읓, 티읕, 히읗**: 모음 조사 앞에서 `[ㅅ]`으로 연음 ➔ `[디그시]`, `[지으시]`, `[치으시]`, `[티으시]`, `[히으시]`
+        - **키읔, 피읖**: 대표음이 아니라 자음 그대로 연음 ➔ `[키으기]`, `[피으비]`
+        
+        ---
+        #### ⏳ 활동 4: 소리의 길이 (제6·7항)
+        - 질문하는 묻고: `[문:고]` (긴소리) / 파묻는 묻고: `[묻꼬]` (짧은소리)
+        - 제7항 단음화: 눈보라(긴소리) ↔ 첫눈(짧은소리), 말씀(긴소리) ↔ 혼잣말(짧은소리), 벌리다(긴소리) ↔ 떠벌리다(짧은소리), 감다(긴소리) ↔ 감으니·감기다(짧은소리), 밟다(긴소리) ↔ 밟으면·밝히다(짧은소리)
+        """)
+        
+    st.write("")
+    col_b1, col_b2 = st.columns(2)
+    with col_b1:
+        if st.button("⬅️ 첫 화면으로 돌아가기 (다시 시작)", key="btn_reset"):
+            st.session_state.stage = 1
+            st.session_state.score = 0
+            st.session_state.user_name = ""
+            st.session_state.student_id = ""
+            safe_rerun()
+    with col_b2:
+        if st.button("🔄 미션 1단계부터 다시 수사하기", key="btn_replay"):
+            st.session_state.stage = 1
+            st.session_state.score = 0
+            safe_rerun()
