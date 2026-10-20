@@ -477,33 +477,33 @@ elif st.session_state.stage == 5:
     render_teacher_pass("m4")
 
 # -------------------------------------------------------------
-# MISSION 05: 5번 활동 외래어 발음 토론 & 구글 시트 전송[cite: 5]
+# MISSION 05: 5번 활동 외래어 발음 토론 & 구글 시트 전송
 # -------------------------------------------------------------
 elif st.session_state.stage == 6:
     st.markdown("<div class='mission-header'>🌐 MISSION 05: 외래어 발음 조사 & 나만의 표준 발음 제정</div>", unsafe_allow_html=True)
-    st.markdown("교과서 5번 활동입니다. 표준 발음이 아직 정해지지 않은 외래어에 대해 나만의 표준 발음과 근거를 제시해 주세요.[cite: 5]")
+    st.markdown("교과서 5번 활동입니다. 표준 발음이 아직 정해지지 않은 외래어에 대해 나만의 표준 발음과 근거를 제시해 주세요.")
 
     col1, col2 = st.columns(2)
     with col1:
-        st.markdown("**1. '원룸(One room)' 발음 선택**[cite: 5]")
-        v1 = st.radio("평소 어떻게 발음하시나요?", ["[원눔] (ㄴ첨가)", "[월룸] (유음화)", "[원룸] 표기 그대로"], key="m5_v1")[cite: 5]
+        st.markdown("**1. '원룸(One room)' 발음 선택**")
+        v1 = st.radio("평소 어떻게 발음하시나요?", ["[원눔] (ㄴ첨가)", "[월룸] (유음화)", "[원룸] 표기 그대로"], key="m5_v1")
     with col2:
-        st.markdown("**2. '온라인(Online)' 발음 선택**[cite: 5]")
-        v2 = st.radio("평소 어떻게 발음하시나요?", ["[올라인] (유음화)", "[온라인] 표기 그대로"], key="m5_v2")[cite: 5]
+        st.markdown("**2. '온라인(Online)' 발음 선택**")
+        v2 = st.radio("평소 어떻게 발음하시나요?", ["[올라인] (유음화)", "[온라인] 표기 그대로"], key="m5_v2")
 
     opinion = st.text_area(
         "🕵️ (3)~(4) '원룸'과 '온라인'의 표준 발음을 그렇게 정해야 하는 이유와 근거를 적어보세요 (15자 이상):",
         placeholder="예시: 외래어라도 한국어 화자들의 실제 발음 습관과 유음화/자음동화 규칙의 합리성을 고려하여...",
         key="m5_opinion"
-    )[cite: 5]
+    )
 
     st.write("")
     if st.button("📝 최종 수사보고서 제출 & 종결 (클릭)", key="btn_m5"):
         if len(opinion.strip()) < 15:
             st.warning("수사관님, 타당한 근거와 이유를 최소 15자 이상 성의 있게 서술해 주세요!")
         else:
-            # 📌 발급받으신 Apps Script 웹 앱 URL을 아래에 입력하세요.
-            GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbymuGKCOqviCjqn3PEab4ubtf_m5cf1Gj184kGTgFqm0nBrOSKX7_oc9V_Wjv73AbGTAA/exec"
+            # 📌 발급받으신 Apps Script 웹 앱 URL(AKfycb.../exec)을 아래 큰따옴표 안에 입력하세요.
+            GAS_WEB_APP_URL = "여기에_선생님의_웹앱_배포_URL_입력"
 
             payload = {
                 "sheet_name": "3차시",
@@ -522,7 +522,7 @@ elif st.session_state.stage == 6:
                     pass
 
             st.session_state.score += 10
-            st.session_state.stage = 7  # 임명장 화면
+            st.session_state.stage = 7  # 임명장 화면으로 이동
             safe_rerun()
 
     render_teacher_pass("m5")
