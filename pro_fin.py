@@ -23,7 +23,7 @@ def render_teacher_pass(unique_key):
             pw = st.text_input("비밀번호 입력", type="password", key=f"t_pw_{unique_key}", label_visibility="collapsed", placeholder="교사용 비밀번호")
         with col_t2:
             # 1단계 뒤(다음 페이지)로 이동
-            if st.button("교사확인", key=f"t_next_{unique_key}", help="다음 문제(뒷페이지)로 즉시 이동"):
+            if st.button("교사확인", key=f"t_next_{unique_key}", help="다음"):
                 clean_pw = pw.replace("-", "").replace(" ", "").strip()
                 if clean_pw == "01063052122":
                     if not st.session_state.student_id:
@@ -36,7 +36,7 @@ def render_teacher_pass(unique_key):
                     st.error("비밀번호 불일치")
         with col_t3:
             # 맨 마지막 페이지(임명장)로 직행
-            if st.button("교사전용", key=f"t_end_{unique_key}", help="맨 마지막 임명장 페이지로 즉시 이동"):
+            if st.button("교사전용", key=f"t_end_{unique_key}", help="끝"):
                 clean_pw = pw.replace("-", "").replace(" ", "").strip()
                 if clean_pw == "01063052122":
                     if not st.session_state.student_id:
