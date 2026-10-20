@@ -281,10 +281,11 @@ elif st.session_state.stage == 5:
         if len(opinion.strip()) < 10:
             st.warning("수사관님, 최종 의견과 근거를 최소 10자 이상 성의 있게 작성해 주세요!")
         else:
-            # 📌 Google Apps Script 웹 앱 배포 URL을 여기에 넣으세요!
-            GAS_WEB_APP_URL = "https://script.google.com/macros/s/1qYYXLIlrS25YUYYhFwvhJdgK6d3bupUgTExYRlLHmKU/exec"
+            # 📌 발급받으신 Google Apps Script 웹 앱 전체 URL(exec로 끝남)을 넣으세요!
+            GAS_WEB_APP_URL = ""https://script.google.com/macros/s/1qYYXLIlrS25YUYYhFwvhJdgK6d3bupUgTExYRlLHmKU/exec"
 
             payload = {
+                "sheet_name": "3차시",  # 👈 3차시 전용 탭으로 자동 저장되도록 지정
                 "student_id": st.session_state.student_id,
                 "user_name": st.session_state.user_name,
                 "score": st.session_state.score + 10,
@@ -294,10 +295,9 @@ elif st.session_state.stage == 5:
             }
 
             try:
-                # 구글 시트로 실시간 전송
                 requests.post(GAS_WEB_APP_URL, json=payload, timeout=5)
             except Exception:
-                pass  # 네트워크 환경 이슈 시에도 학생 흐름은 정상 진행
+                pass  # 네트워크 예외 상황에서도 학생 클리어 진행
 
             st.session_state.score += 10
             st.session_state.stage = 6
