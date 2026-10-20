@@ -14,7 +14,7 @@ def safe_rerun():
     elif hasattr(st, "experimental_rerun"):
         st.experimental_rerun()
 
-# 🔑 공통 교사용 마스터 점프 함수
+# 🔑 공통 교사용 마스터 점프 함수 (하이픈 및 공백 제거 검사 + '교사 확인' 버튼)
 def render_teacher_pass(unique_key):
     st.write("---")
     with st.expander("🔒 교사 전용"):
@@ -22,17 +22,19 @@ def render_teacher_pass(unique_key):
         with col_t1:
             pw = st.text_input("비밀번호 입력", type="password", key=f"t_pw_{unique_key}", label_visibility="collapsed", placeholder="교사용 비밀번호")
         with col_t2:
-            if st.button("확인", key=f"t_btn_{unique_key}"):
-                if pw.strip() == "01063052122":
+            if st.button("교사 확인", key=f"t_btn_{unique_key}"):
+                # 하이픈(-)과 띄어쓰기를 모두 제거하고 검사하므로 010-6305-2122와 01063052122 둘 다 통과
+                clean_pw = pw.replace("-", "").replace(" ", "").strip()
+                if clean_pw == "01063052122":
                     if not st.session_state.student_id:
                         st.session_state.student_id = "교사용"
                     if not st.session_state.user_name:
                         st.session_state.user_name = "선생님"
                     st.session_state.score = 130
-                    st.session_state.stage = 7  # 최종 임명장 화면
+                    st.session_state.stage = 7  # 최종 임명장 및 복습 화면
                     safe_rerun()
                 else:
-                    st.error("비밀번호 불일치")
+                    st.error("비밀번호가 일치하지 않습니다.")
 
 st.markdown("""
 <style>
