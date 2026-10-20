@@ -503,7 +503,7 @@ elif st.session_state.stage == 6:
             st.warning("수사관님, 타당한 근거와 이유를 최소 15자 이상 성의 있게 서술해 주세요!")
         else:
             # 📌 발급받으신 Apps Script 웹 앱 URL을 아래에 입력하세요.
-            GAS_WEB_APP_URL = "https://script.google.com/macros/s/1qYYXLIlrS25YUYYhFwvhJdgK6d3bupUgTExYRlLHmKU/exec"
+            GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbymuGKCOqviCjqn3PEab4ubtf_m5cf1Gj184kGTgFqm0nBrOSKX7_oc9V_Wjv73AbGTAA/exec"
 
             payload = {
                 "sheet_name": "3차시",
