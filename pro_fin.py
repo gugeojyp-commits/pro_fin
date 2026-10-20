@@ -215,7 +215,6 @@ elif st.session_state.stage == 2:
 elif st.session_state.stage == 3:
     st.markdown("<div class='mission-header'>💬 MISSION 03: 가나다 상담소 & 자모 발음 특례 (제16항)</div>", unsafe_allow_html=True)
     
-    # 📌 교과서 3번 상단 대화문 시각화
     st.markdown("""
     <div class="chat-bubble-user">
         <b>🙋‍♂️ 질문자 학생:</b><br>
@@ -294,12 +293,11 @@ elif st.session_state.stage == 3:
             st.error("❌ 수정이 필요합니다:\n- " + "\n- ".join(err_msg))
 
 # -------------------------------------------------------------
-# MISSION 04: 4번 활동 소리의 길이 대화문 시각화 & 12개 단어
+# MISSION 04: 4번 활동 소리의 길이 대화문 & 전체 선택형(객관식) 전환
 # -------------------------------------------------------------
 elif st.session_state.stage == 4:
     st.markdown("<div class='mission-header'>⏳ MISSION 04: 소리의 길이 (장단음 탐구 & 제7항)</div>", unsafe_allow_html=True)
     
-    # 📌 교과서 4번 상단 대화문 시각화
     st.markdown("""
     <div class="dialogue-box">
         <b>대영:</b> 아, 아까 지수 반응을 보니 내가 뭘 잘못한 것 같은데, 그게 뭔지 모르겠어.<br>
@@ -310,24 +308,49 @@ elif st.session_state.stage == 4:
     </div>
     """, unsafe_allow_html=True)
 
-    st.markdown("#### (1) 대영과 부연이 의도하고 이해한 '묻다'의 뜻과 표준 발음")
+    st.markdown("#### (1) 대영과 부연이 의도하고 이해한 '묻다'의 뜻과 표준 발음 (선택형)")
     col1, col2 = st.columns(2)
     with col1:
-        st.markdown("**대영이 의도한 '묻다' (질문)**")
-        ans_ask_mean = st.text_input("뜻 (예: 질문하다/물어보다):", key="m4_ask_m").strip()
-        ans_ask_sound = st.selectbox("표준 발음 (소리의 길이):", ["선택...", "짧은소리 [묻따]", "긴소리 [문:따]"], key="m4_ask_s")
+        st.markdown("**📁 대영이 의도한 '묻다'**")
+        ans_ask_mean = st.selectbox(
+            "대영의 의도 뜻:", 
+            ["선택하세요...", "무언가를 질문하다 (물어보다)", "흙이나 물건 따위로 파묻다 (덮어두다)", "옷에 얼룩 따위가 번지다"], 
+            key="m4_ask_m"
+        )
+        ans_ask_sound = st.selectbox(
+            "대영의 의도 표준 발음:", 
+            ["선택하세요...", "긴소리 [문:따]", "짧은소리 [묻따]"], 
+            key="m4_ask_s"
+        )
     with col2:
-        st.markdown("**부연이 이해한 '묻다' (매몰/은폐)**")
-        ans_bury_mean = st.text_input("뜻 (예: 파묻다/덮어두다):", key="m4_bury_m").strip()
-        ans_bury_sound = st.selectbox("표준 발음 (소리의 길이):", ["선택...", "짧은소리 [묻따]", "긴소리 [문:따]"], key="m4_bury_s")
+        st.markdown("**📁 부연이 이해한 '묻다'**")
+        ans_bury_mean = st.selectbox(
+            "부연의 이해 뜻:", 
+            ["선택하세요...", "무언가를 질문하다 (물어보다)", "흙이나 물건 따위로 파묻다 (덮어두다)", "옷에 얼룩 따위가 번지다"], 
+            key="m4_bury_m"
+        )
+        ans_bury_sound = st.selectbox(
+            "부연의 이해 표준 발음:", 
+            ["선택하세요...", "짧은소리 [묻따]", "긴소리 [문:따]"], 
+            key="m4_bury_s"
+        )
 
-    st.markdown("#### (3) 대영의 마지막 말에 쓰인 '묻는'의 발음 채점")
+    st.markdown("---")
+    st.markdown("#### (3) 대영의 마지막 말에 쓰인 '묻는'의 발음 (선택형)")
     st.write("“그러니까 잘못을 **묻는[ 1 ]** 게 아니라 **묻는[ 2 ]**다고!”")
     cm1, cm2 = st.columns(2)
     with cm1:
-        ans_mun1 = cm1.text_input("첫 번째 묻는 (파묻다) 발음:", key="m4_mun1").strip()
+        ans_mun1 = cm1.selectbox(
+            "첫 번째 '묻는' (파묻다) 발음:", 
+            ["선택하세요...", "짧은소리 [문는]", "긴소리 [문:는]", "음절끝소리 [묻는]"], 
+            key="m4_mun1"
+        )
     with cm2:
-        ans_mun2 = cm2.text_input("두 번째 묻는 (질문하다) 발음 (장음 표시는 : ):", key="m4_mun2").strip()
+        ans_mun2 = cm2.selectbox(
+            "두 번째 '묻는' (질문하다) 발음:", 
+            ["선택하세요...", "긴소리 [문:는]", "짧은소리 [문는]", "음절끝소리 [묻는]"], 
+            key="m4_mun2"
+        )
 
     st.markdown("---")
     st.markdown("#### (4) 「표준 발음법」 제6항·제7항에 따른 12개 단어 소리의 길이")
@@ -357,9 +380,9 @@ elif st.session_state.stage == 4:
     st.write("")
     if st.button("⏱️ 소리의 길이 판정 및 다음 미션으로 (클릭)", key="btn_m4"):
         part1_ok = (
-            len(ans_ask_mean) >= 2 and "긴소리" in ans_ask_sound and
-            len(ans_bury_mean) >= 2 and "짧은소리" in ans_bury_sound and
-            ans_mun1 == "문는" and (ans_mun2 in ["문:는", "문ː는"])
+            "질문하다" in ans_ask_mean and ans_ask_sound == "긴소리 [문:따]" and
+            "파묻다" in ans_bury_mean and ans_bury_sound == "짧은소리 [묻따]" and
+            ans_mun1 == "짧은소리 [문는]" and ans_mun2 == "긴소리 [문:는]"
         )
 
         part2_ok = True
@@ -376,9 +399,9 @@ elif st.session_state.stage == 4:
         else:
             errs = []
             if not part1_ok:
-                errs.append("대화 분석(뜻 2글자 이상 입력, 질문=긴소리, 파묻다=짧은소리, 묻는=[문는]과 [문:는])을 확인하세요.")
+                errs.append("대화 분석(대영: 질문/긴소리, 부연: 파묻다/짧은소리, 묻는: 첫 번째=[문는], 두 번째=[문:는])을 바르게 선택해 주세요.")
             if not part2_ok:
-                errs.append(f"장단음 판별 오답: {', '.join(wrongs)}")
+                errs.append(f"12개 단어 장단음 판별 오답: {', '.join(wrongs)}")
             st.error("❌ 오차가 발견되었습니다:\n- " + "\n- ".join(errs))
 
 # -------------------------------------------------------------
@@ -407,7 +430,7 @@ elif st.session_state.stage == 5:
         if len(opinion.strip()) < 15:
             st.warning("수사관님, 타당한 근거와 이유를 최소 15자 이상 성의 있게 서술해 주세요!")
         else:
-            # 📌 여기에 발급받으신 Apps Script 웹 앱 URL을 입력하세요.
+            # 📌 발급받으신 Apps Script 웹 앱 URL을 아래 큰따옴표 안에 입력하세요.
             GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbw9W3FvLg_SAMPLE_REPLACE_ME/exec"
 
             payload = {
@@ -453,7 +476,6 @@ elif st.session_state.stage == 6:
     
     st.success("🎉 모든 수사 미션을 완료하고 결과가 전송되었습니다!")
     
-    # 📌 한 번에 전 문항의 정답과 조항을 복습할 수 있는 요약 뷰어
     with st.expander("📋 [전체 수사 기록 종합 검토서] 모든 문제 정답 한눈에 확인하기", expanded=True):
         st.markdown("""
         #### 🎯 활동 1: 10개 단어와 표준 발음법 조항 매칭
@@ -484,6 +506,7 @@ elif st.session_state.stage == 6:
         ---
         #### ⏳ 활동 4: 소리의 길이 (제6·7항)
         - 질문하는 묻고: `[문:고]` (긴소리) / 파묻는 묻고: `[묻꼬]` (짧은소리)
+        - 대영의 마지막 말: 첫 번째 묻는 = `[문는]` (파묻다) / 두 번째 묻는 = `[문:는]` (질문하다)
         - 제7항 단음화: 눈보라(긴소리) ↔ 첫눈(짧은소리), 말씀(긴소리) ↔ 혼잣말(짧은소리), 벌리다(긴소리) ↔ 떠벌리다(짧은소리), 감다(긴소리) ↔ 감으니·감기다(짧은소리), 밟다(긴소리) ↔ 밟으면·밝히다(짧은소리)
         """)
         
