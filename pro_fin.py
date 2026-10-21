@@ -418,7 +418,7 @@ elif st.session_state.stage == 5:
         )
         ans_ask_sound = st.selectbox(
             "대영의 의도 표준 발음:", 
-            ["선택하세요...", "긴소리 [문:고]", "짧은소리 [묻고]"], 
+            ["선택하세요...", "긴소리 [묻:꼬]", "짧은소리 [묻꼬]"], 
             key="m4_ask_s"
         )
     with col2:
@@ -430,7 +430,7 @@ elif st.session_state.stage == 5:
         )
         ans_bury_sound = st.selectbox(
             "부연의 이해 표준 발음:", 
-            ["선택하세요...", "짧은소리 [묻고]", "긴소리 [문:고]"], 
+            ["선택하세요...", "짧은소리 [묻꼬]", "긴소리 [묻:꼬]"], 
             key="m4_bury_s"
         )
 
