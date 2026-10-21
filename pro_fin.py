@@ -279,12 +279,15 @@ elif st.session_state.stage == 3:
         wrongs = []
         for item in words_20:
             val = u_ans_20[item["w"]]
+            # 쉼표, 마침표, 슬래시, 공백 등 모든 구분 기호 제거
             clean_val = val.replace(" ", "").replace(",", "").replace("/", "").replace(".", "")
 
-            # 1) 건의, 되어(4개): 입력값에 필수 단어들이 모두 포함되어 있는지 검사 (순서/구분자 무관)
-            if item["w"] in ["건의", "되어(4개)"]:
+            # 💡 [핵심 수정 부분]
+            # ans 리스트에 단어가 2개 이상이면(건의(2개), 되어(4개))
+            # 입력한 글자 안에 그 단어들이 모두 포함되어 있는지 확인 (순서/구분자 무관)
+            if len(item["ans"]) > 1:
                 is_correct = all(word in clean_val for word in item["ans"])
-            # 2) 일반 단어: 띄어쓰기 오차 무시하고 정답 리스트와 일치 여부 비교
+            # 단어가 1개인 일반 문제는 기존처럼 일치 비교
             else:
                 clean_ans = [a.replace(" ", "") for a in item["ans"]]
                 is_correct = clean_val in clean_ans
