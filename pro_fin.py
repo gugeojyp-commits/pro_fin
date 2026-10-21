@@ -103,11 +103,11 @@ if st.session_state.stage == 1 and not st.session_state.user_name:
             </div>
             <div style="background-color: #BBF7D0; color: #1E293B; padding: 12px 18px; border-radius: 8px; font-weight: bold;">
                 📌 오늘의 수사 미션<br>
-                Mission 01-1. 교체 단어 5개 검거<br>
-                Mission 01-2. 탈락/첨가/축약 5개 검거<br>
-                Mission 02. 연설문 20개 단어 감식<br>
-                Mission 03. 한글 자모 발음 특례<br>
-                Mission 04. 소리의 길이(장단음) 수사<br>
+                Mission 01-1. 교체 단어 검거<br>
+                Mission 01-2. 탈락/첨가/축약 검거<br>
+                Mission 02. 연설문 단어 감식<br>
+                Mission 03. 한글 자모 발음<br>
+                Mission 04. 소리의 길이 수사<br>
                 Mission 05. 외래어 표준 판결
             </div>
         </div>
