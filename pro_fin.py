@@ -434,7 +434,7 @@ elif st.session_state.stage == 5:
             key="m4_bury_s"
         )
 
-   st.markdown("---")
+    st.markdown("---")
     st.markdown("#### (3) 대영의 마지막 말에 쓰인 '묻는'의 발음 (선택형)")
     st.write("“그러니까 잘못을 **묻는[ 1 ]** 게 아니라 **묻는[ 2 ]**다고!”")
     
