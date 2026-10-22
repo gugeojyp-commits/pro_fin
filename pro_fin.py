@@ -436,7 +436,7 @@ elif st.session_state.stage == 5:
     with cm1:
         ans_mun1 = st.selectbox(
             "첫 번째 '묻는' (파묻다) 발음:", 
-            ["선택하세요...", "짧은소리 [문는]", "긴소리 [문:는]"], 
+            ["선택하세요...", "긴소리 [문:는]", "짧은소리 [문는]"], 
             key="m4_mun1"
         )
     with cm2:
