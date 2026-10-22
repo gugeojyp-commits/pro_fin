@@ -1,5 +1,6 @@
 import streamlit as st
 import requests
+import json
 from itertools import permutations
 
 # 1. 페이지 설정 및 스타일
@@ -23,7 +24,6 @@ def render_teacher_pass(unique_key):
         with col_t1:
             pw = st.text_input("비밀번호 입력", type="password", key=f"t_pw_{unique_key}", label_visibility="collapsed", placeholder="교사용 비밀번호")
         with col_t2:
-            # 1단계 뒤(다음 페이지)로 이동
             if st.button("교사확인", key=f"t_next_{unique_key}", help="다음"):
                 clean_pw = pw.replace("-", "").replace(" ", "").strip()
                 if clean_pw == "01063052122":
@@ -36,7 +36,6 @@ def render_teacher_pass(unique_key):
                 else:
                     st.error("비밀번호 불일치")
         with col_t3:
-            # 맨 마지막 페이지(임명장)로 직행
             if st.button("교사전용", key=f"t_end_{unique_key}", help="끝"):
                 clean_pw = pw.replace("-", "").replace(" ", "").strip()
                 if clean_pw == "01063052122":
@@ -248,21 +247,21 @@ elif st.session_state.stage == 3:
         {"w": "짧고", "ans": ["짤꼬"]}, 
         {"w": "굵게", "ans": ["굴께"]}, 
         {"w": "의견란", "ans": ["의견난"]}, 
-        {"w": "건의(2개)", "ans": ["거늬", "거니"]},          # 2개 모두 필수
+        {"w": "건의(2개)", "ans": ["거늬", "거니"]},
         {"w": "듣고", "ans": ["듣꼬"]}, 
         {"w": "폭넓게", "ans": ["퐁널께"]}, 
         {"w": "곳곳에", "ans": ["곧꼬세"]}, 
-        {"w": "꽃을", "ans": ["꼬츨"]},
+        {"w": "꽃을", "ans": ["꼬츨"]}, 
         {"w": "삭막한", "ans": ["상마칸"]}, 
         {"w": "실내", "ans": ["실래"]}, 
         {"w": "학급", "ans": ["학끕"]}, 
-        {"w": "책꽂이", "ans": ["책꼬지"]},
+        {"w": "책꽂이", "ans": ["책꼬지"]}, 
         {"w": "놓아", "ans": ["노아"]}, 
         {"w": "읽는", "ans": ["잉는"]}, 
         {"w": "기를 수", "ans": ["기를쑤"]}, 
-        {"w": "끝으로", "ans": ["끄트로"]},
+        {"w": "끝으로", "ans": ["끄트로"]}, 
         {"w": "궂은일", "ans": ["구즌닐"]}, 
-        {"w": "되어(4개)", "ans": ["되어", "되여", "뒈어", "뒈여"]},  # 4개 모두 필수
+        {"w": "되어(4개)", "ans": ["되어", "되여", "뒈어", "뒈여"]}, 
         {"w": "같이", "ans": ["가치"]}, 
         {"w": "행복한", "ans": ["행보칸"]}
     ]
@@ -279,15 +278,10 @@ elif st.session_state.stage == 3:
         wrongs = []
         for item in words_20:
             val = u_ans_20[item["w"]]
-            # 쉼표, 마침표, 슬래시, 공백 등 모든 구분 기호 제거
             clean_val = val.replace(" ", "").replace(",", "").replace("/", "").replace(".", "")
 
-            # 💡 [핵심 수정 부분]
-            # ans 리스트에 단어가 2개 이상이면(건의(2개), 되어(4개))
-            # 입력한 글자 안에 그 단어들이 모두 포함되어 있는지 확인 (순서/구분자 무관)
             if len(item["ans"]) > 1:
                 is_correct = all(word in clean_val for word in item["ans"])
-            # 단어가 1개인 일반 문제는 기존처럼 일치 비교
             else:
                 clean_ans = [a.replace(" ", "") for a in item["ans"]]
                 is_correct = clean_val in clean_ans
@@ -441,18 +435,16 @@ elif st.session_state.stage == 5:
     cm1, cm2 = st.columns(2)
     with cm1:
         ans_mun1 = st.selectbox(
-            "첫 번째 '묻는' (책임을 따지다/질문하다) 발음:", 
-            ["선택하세요...", "긴소리 [문:는]", "짧은소리 [문는]"], 
+            "첫 번째 '묻는' (파묻다) 발음:", 
+            ["선택하세요...", "짧은소리 [문는]", "긴소리 [문:는]"], 
             key="m4_mun1"
         )
     with cm2:
         ans_mun2 = st.selectbox(
-            "두 번째 '묻는' (파묻다) 발음:", 
-            ["선택하세요...", "짧은소리 [문는]", "긴소리 [문:는]"], 
+            "두 번째 '묻는' (질문하다) 발음:", 
+            ["선택하세요...", "긴소리 [문:는]", "짧은소리 [문는]"], 
             key="m4_mun2"
         )
-# 채점 로직
-is_correct = (ans_mun1 == "긴소리 [문:는]") and (ans_mun2 == "짧은소리 [문는]")
 
     st.markdown("---")
     st.markdown("#### (4) 「표준 발음법」 제6항·제7항에 따른 12개 단어 소리의 길이")
@@ -482,8 +474,8 @@ is_correct = (ans_mun1 == "긴소리 [문:는]") and (ans_mun2 == "짧은소리 
     st.write("")
     if st.button("⏱️ 소리의 길이 판정 및 다음 미션으로 (클릭)", key="btn_m4"):
         part1_ok = (
-            "질문하다" in ans_ask_mean and ans_ask_sound == "긴소리 [문:따]" and
-            "파묻다" in ans_bury_mean and ans_bury_sound == "짧은소리 [묻따]" and
+            "질문하다" in ans_ask_mean and ans_ask_sound == "긴소리 [묻:꼬]" and
+            "파묻다" in ans_bury_mean and ans_bury_sound == "짧은소리 [묻꼬]" and
             ans_mun1 == "짧은소리 [문는]" and ans_mun2 == "긴소리 [문:는]"
         )
 
@@ -548,9 +540,7 @@ elif st.session_state.stage == 6:
 
             with st.spinner("구글 시트로 수사보고서를 안전하게 전송하는 중..."):
                 try:
-                    import json
                     headers = {"Content-Type": "application/json"}
-                    
                     response = requests.post(
                         GAS_WEB_APP_URL,
                         data=json.dumps(payload),
@@ -620,7 +610,7 @@ elif st.session_state.stage == 7:
         
         ---
         #### ⏳ 활동 4: 소리의 길이 (제6·7항)
-        - 질문하는 묻고: `[문:고]` (긴소리) / 파묻는 묻고: `[묻꼬]` (짧은소리)
+        - 질문하는 묻고: `[묻:꼬]` (긴소리) / 파묻는 묻고: `[묻꼬]` (짧은소리)
         - 대영의 마지막 말: 첫 번째 묻는 = `[문는]` (파묻다) / 두 번째 묻는 = `[문:는]` (질문하다)
         - 제7항 단음화: 눈보라(긴소리) ↔ 첫눈(짧은소리), 말씀(긴소리) ↔ 혼잣말(짧은소리), 벌리다(긴소리) ↔ 떠벌리다(짧은소리), 감다(긴소리) ↔ 감으니·감기다(짧은소리), 밟다(긴소리) ↔ 밟으면·밝히다(짧은소리)
         """)
