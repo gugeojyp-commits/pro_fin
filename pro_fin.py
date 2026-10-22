@@ -434,23 +434,23 @@ elif st.session_state.stage == 5:
             key="m4_bury_s"
         )
 
-    st.markdown("---")
+   st.markdown("---")
     st.markdown("#### (3) 대영의 마지막 말에 쓰인 '묻는'의 발음 (선택형)")
     st.write("“그러니까 잘못을 **묻는[ 1 ]** 게 아니라 **묻는[ 2 ]**다고!”")
-   cm1, cm2 = st.columns(2)
-with cm1:
-    ans_mun1 = cm1.selectbox(
-        "첫 번째 '묻는' (책임을 따지다/질문하다) 발음:", 
-        ["선택하세요...", "긴소리 [문:는]", "짧은소리 [문는]"], 
-        key="m4_mun1"
-    )
-with cm2:
-    ans_mun2 = cm2.selectbox(
-        "두 번째 '묻는' (파묻다) 발음:", 
-        ["선택하세요...", "짧은소리 [문는]", "긴소리 [문:는]"], 
-        key="m4_mun2"
-    )
-
+    
+    cm1, cm2 = st.columns(2)
+    with cm1:
+        ans_mun1 = st.selectbox(
+            "첫 번째 '묻는' (책임을 따지다/질문하다) 발음:", 
+            ["선택하세요...", "긴소리 [문:는]", "짧은소리 [문는]"], 
+            key="m4_mun1"
+        )
+    with cm2:
+        ans_mun2 = st.selectbox(
+            "두 번째 '묻는' (파묻다) 발음:", 
+            ["선택하세요...", "짧은소리 [문는]", "긴소리 [문:는]"], 
+            key="m4_mun2"
+        )
 # 채점 로직
 is_correct = (ans_mun1 == "긴소리 [문:는]") and (ans_mun2 == "짧은소리 [문는]")
 
